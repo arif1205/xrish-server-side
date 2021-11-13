@@ -23,58 +23,83 @@ async function run() {
 		console.log("Database connected successfully");
 		const database = client.db("authentic_watch");
 		const productsCollection = database.collection("products");
-		// const teamCollection = database.collection("teams");
-		// const orderCollection = database.collection("orders");
+		const reviewsCollection = database.collection("reviews");
+		const orderCollection = database.collection("orders");
 
+		// find all products
 		app.get("/products", async (req, res) => {
 			const cursor = productsCollection.find({});
 			const products = await cursor.toArray();
 			res.send(products);
 		});
 
-		// app.get("/teams", async (req, res) => {
-		// 	const cursor = teamCollection.find({});
-		// 	const teams = await cursor.toArray();
-		// 	res.send(teams);
-		// });
+		// find products using id
+		app.get("/products/:id", async (req, res) => {
+			const id = req.params.id;
+			const cursor = productsCollection.find({ _id: ObjectId(id) });
+			const result = await cursor.toArray();
+			res.json(result);
+		});
 
-		// order place api
-		// app.post("/orders", async (req, res) => {
-		// 	const newOrder = req.body;
-		// 	const result = await orderCollection.insertOne(newOrder);
-		// 	res.json(result);
-		// });
+		// new products add
+		app.post("/products", async (req, res) => {
+			const newOrder = req.body;
+			const result = await productsCollection.insertOne(newOrder);
+			res.json(result);
+		});
 
-		// new service add
-		// app.post("/services", async (req, res) => {
-		// 	const newOrder = req.body;
-		// 	const result = await serviceCollection.insertOne(newOrder);
-		// 	res.json(result);
-		// });
+		// delete products
+		app.delete("/products", async (req, res) => {
+			const { id } = req.query;
+			const result = await productsCollection.deleteOne({ _id: ObjectId(id) });
+			res.json(result);
+		});
+
+		// get reviews
+		app.get("/reviews", async (req, res) => {
+			const cursor = reviewsCollection.find({});
+			const reviews = await cursor.toArray();
+			res.send(reviews);
+		});
+
+		// add reviews
+		app.post("/reviews", async (req, res) => {
+			const newReview = req.body;
+			const result = await reviewsCollection.insertOne(newReview);
+			res.json(result);
+		});
+
+		// order place
+		app.post("/orders", async (req, res) => {
+			const newOrder = req.body;
+			const result = await orderCollection.insertOne(newOrder);
+			res.json(result);
+		});
 
 		// get order
-		// app.get("/orders", async (req, res) => {
-		// 	const cursor = orderCollection.find({});
-		// 	const orders = await cursor.toArray();
-		// 	res.send(orders);
-		// });
+		app.get("/orders", async (req, res) => {
+			const email = req.query;
+			const cursor = orderCollection.find(email);
+			const orders = await cursor.toArray();
+			res.send(orders);
+		});
 
 		// update order
-		// app.put("/orders/:id", async (req, res) => {
-		// 	const id = req.params.id;
-		// 	const result = await orderCollection.updateOne(
-		// 		{ _id: ObjectId(id) },
-		// 		{ $set: { status: true } }
-		// 	);
-		// 	res.json(result);
-		// });
+		app.put("/orders", async (req, res) => {
+			const { id } = req.query;
+			const result = await orderCollection.updateOne(
+				{ _id: ObjectId(id) },
+				{ $set: { status: "Shipped" } }
+			);
+			res.json(result);
+		});
 
 		// delete order
-		// app.delete("/orders/:id", async (req, res) => {
-		// 	const id = req.params.id;
-		// 	const result = await orderCollection.deleteOne({ _id: ObjectId(id) });
-		// 	res.json(result);
-		// });
+		app.delete("/orders", async (req, res) => {
+			const id = req.query;
+			const result = await orderCollection.deleteOne({ _id: ObjectId(id) });
+			res.json(result);
+		});
 	} finally {
 		// await client.close()
 	}
