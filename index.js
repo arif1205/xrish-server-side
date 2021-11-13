@@ -25,6 +25,14 @@ async function run() {
 		const productsCollection = database.collection("products");
 		const reviewsCollection = database.collection("reviews");
 		const orderCollection = database.collection("orders");
+		const usersCollection = database.collection("users");
+
+		// add users
+		app.post("/users", async (req, res) => {
+			const newOrder = { ...req.body, role: "customer" };
+			const result = await usersCollection.insertOne(newOrder);
+			res.json(result);
+		});
 
 		// find all products
 		app.get("/products", async (req, res) => {
