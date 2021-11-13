@@ -45,7 +45,7 @@ async function run() {
 		// Update role
 		app.put("/users", async (req, res) => {
 			const email = req.query;
-			const result = await orderCollection.updateOne(email, {
+			const result = await usersCollection.updateOne(email, {
 				$set: { role: "admin" },
 			});
 			res.json(result);
