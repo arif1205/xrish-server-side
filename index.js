@@ -42,6 +42,15 @@ async function run() {
 			res.json(result);
 		});
 
+		// Update role
+		app.put("/users", async (req, res) => {
+			const email = req.query;
+			const result = await orderCollection.updateOne(email, {
+				$set: { role: "admin" },
+			});
+			res.json(result);
+		});
+
 		// find all products
 		app.get("/products", async (req, res) => {
 			const cursor = productsCollection.find({});
